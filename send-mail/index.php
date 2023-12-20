@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="../send-mail/style/bootstrap4/css/bootstrap.min.css">
   <link rel="stylesheet" href="../send-mail/style/style.css">
 
-  <title>Send Mail</title>
+  <title>Mail Send</title>
 </head>
 
 <body>
@@ -26,20 +26,20 @@
 
     <div class="row">
       <div class="card-body font-weight-bold">
-        <form action="">
+        <form action="../send-mail/processa_envio.php" method="post">
           <div class="form-group w-50 mx-auto">
             <label for="para">Para</label>
-            <input id="para" class="form-control" type="text" required placeholder="placeholder@email.com.br">
+            <input id="para" class="form-control" name="destinatario" type="text" required placeholder="placeholder@email.com.br">
           </div>
 
           <div class="form-group w-50 mx-auto">
             <label for="assunto">Assunto</label>
-            <input id="assunto" class="form-control" type="text" required placeholder="Assunto do e-mail">
+            <input id="assunto" class="form-control" name="assunto" type="text" required placeholder="Assunto do e-mail">
           </div>
 
           <div class="form-group w-50 mx-auto">
             <label for="mensagem">Mensagem</label>
-            <textarea id="mensagem" class="form-control" rows="3" required placeholder="Digite sua mensagem"></textarea>
+            <textarea id="mensagem" class="form-control" name="mensagem_email" rows="3" required placeholder="Digite sua mensagem"></textarea>
           </div>
 
           <div class="form-group d-flex justify-content-around mx-auto mt-4">
