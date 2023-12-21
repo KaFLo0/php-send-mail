@@ -17,9 +17,9 @@
 
 <body>
 
-  <div class="container">
+  <div class="container my-auto">
     <header class="py-3 text-center">
-      <img src="../send-mail/assets/logo.png" alt="Logo">
+      <img class="img-logo" src="../send-mail/assets/logo.png" alt="Logo">
       <h2>Send Mail</h2>
       <p class="lead">Seu app de envio de e-mail particular!</p>
     </header>
@@ -39,7 +39,7 @@
 
           <div class="form-group w-50 mx-auto">
             <label for="mensagem">Mensagem</label>
-            <textarea id="mensagem" class="form-control" name="mensagem_email" rows="3" required placeholder="Digite sua mensagem"></textarea>
+            <textarea id="mensagem" class="form-control" name="mensagem_email" rows="5" required placeholder="Digite sua mensagem"></textarea>
           </div>
 
           <div class="form-group d-flex justify-content-around mx-auto mt-4">

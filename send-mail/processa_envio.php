@@ -16,6 +16,7 @@ class Mensagem {
   private $destinatario = null;
   private $assunto = null;
   private $mensagem_email = null;
+  public $status = array('codigo_status' => null, 'descricao_status' => '');
 
   public function __get($name) {
     return $this->$name;
@@ -43,8 +44,7 @@ $mensagem->__set('assunto', $_POST['assunto']);
 $mensagem->__set('mensagem_email', $_POST['mensagem_email']);
 
 if(!$mensagem->mensagemValida()) {
-  echo 'Mensagem é inválida';
-  die();
+  header('Location: index.php?envio=erro');
 }
 
 //Create an instance; passing `true` enables exceptions
@@ -52,37 +52,122 @@ $mail = new PHPMailer(true);
 
 try {
   //Server settings
-  $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+  $mail->SMTPDebug = false;                      //Enable verbose debug output
   $mail->isSMTP();                                            //Send using SMTP
-  $mail->Host       = 'smtp.example.com';                     //Set the SMTP server to send through
+  $mail->Host       = '';                     //Set the SMTP server to send through
   $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-  $mail->Username   = 'user@example.com';                     //SMTP username
-  $mail->Password   = 'secret';                               //SMTP password
-  $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
-  $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+  # Coloque seu username e senha abaixo(NÃO DIVULGUE SUA SENHA EM HIPÓTESE ALGUMA, SÓ MODIFIQUE OS CAMPOS ABAIXO SE VOCÊ TIVER CERTEZA QUE ELES NÃO IRAM VAZAR)
+  $mail->Username   = '';                     //SMTP username
+  $mail->Password   = '';                               //SMTP password
+
+  $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
+  $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+  $mail->setLanguage('pt');
+  $mail->CharSet = 'UTF-8';
+  $mail->Encoding = 'base64';
 
   //Recipients
-  $mail->setFrom('from@example.com', 'Mailer');
-  $mail->addAddress('joe@example.net', 'Joe User');     //Add a recipient
-  $mail->addAddress('ellen@example.com');               //Name is optional
-  $mail->addReplyTo('info@example.com', 'Information');
-  $mail->addCC('cc@example.com');
-  $mail->addBCC('bcc@example.com');
+  $mail->setFrom('');
+  $mail->addAddress($mensagem->__get('destinatario'));     //Add a recipient
+  //$mail->addReplyTo('info@example.com', 'Information');
+  //$mail->addCC('cc@example.com');
+  //$mail->addBCC('bcc@example.com');
 
   //Attachments
-  $mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
-  $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
+  //$mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
+  //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
 
   //Content
   $mail->isHTML(true);                                  //Set email format to HTML
-  $mail->Subject = 'Here is the subject';
-  $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
-  $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+  $mail->Subject = $mensagem->__get('assunto');
+  $mail->Body    = $mensagem->__get('mensagem_email');
+  $mail->AltBody = 'É necessário utilizar um client que suporte HTML para ter acesso total ao conteúdo dessa mensagem.';
 
   $mail->send();
-  echo 'Message has been sent';
+
+  $mensagem->status['codigo_status'] = 1;
+  $mensagem->status['descricao_status'] = 'E-mail enviado com sucesso.';
 } catch (Exception $e) {
-  echo "Não foi possível enviar a mensagem! Tente novamente mais tarde. Detalhes do erro: {$mail->ErrorInfo}";
+  $mensagem->status['codigo_status'] = 2;
+  $mensagem->status['descricao_status'] = "Não foi possível enviar este e-mail! Tente novamente mais tarde. Detalhes do erro: {$mail->ErrorInfo}";
 }
 
 ?>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Essential metadatas -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="assets/logo.png">
+  <!-- Style -->
+  <link rel="stylesheet" href="style/bootstrap4/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style/style.css">
+
+  <title>Mail Send</title>
+</head>
+
+<body>
+
+  <div class="container my-auto">
+    <header class="py-3 text-center">
+      <img class="img-logo" src="assets/logo.png" alt="Logo">
+      <h2>Send Mail</h2>
+      <p class="lead">Seu app de envio de e-mail particular!</p>
+    </header>
+
+    <div class="row">
+      <div class="col">
+        <?php if($mensagem->status['codigo_status'] != 1) { ?>
+
+          <div class="d-flex flex-column text-center">
+            <h1 class="display-4 text-danger">Ops!</h1>
+            <p><?= $mensagem->status['descricao_status'] ?></p>
+            <a href="index.php" class="btn w-25 btn-danger btn-lg mt-4 align-self-center text-white">Voltar</a>
+          </div>
+
+        <?php } else { ?>
+
+          <div class="d-flex flex-column text-center">
+            <h1 class="display-4 text-success">Sucesso!</h1>
+            <p><?= $mensagem->status['descricao_status'] ?></p>
+            <a href="index.php" class="btn w-25 btn-success btn-lg mt-4 align-self-center text-white">Voltar</a>
+          </div>
+
+        <?php } ?>
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="mt-auto">
+    <hr>
+    <nav class="navbar w-100 navbar-light bg-transparent">
+      <ul class="navbar-nav mx-auto flex-row">
+        <li class="nav-item mr-3">
+          <a href="https://github.com/KaFLo0" target="_blank" class="nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="black" class="bi bi-github" viewBox="0 0 16 16">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            GitHub
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="https://www.linkedin.com/in/kaio-davy-costa-200338293/" target="_blank" class="nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="lightblue" class="bi bi-linkedin" viewBox="0 0 16 16">
+              <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+            </svg>
+            LinkedIn
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </footer>
+
+</body>
+
+</html>
