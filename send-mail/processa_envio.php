@@ -57,7 +57,7 @@ try {
   $mail->Host       = '';                     //Set the SMTP server to send through
   $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
 
-  # Coloque seu username e senha abaixo(NÃO DIVULGUE SUA SENHA EM HIPÓTESE ALGUMA, SÓ MODIFIQUE OS CAMPOS ABAIXO SE VOCÊ TIVER CERTEZA QUE ELES NÃO IRAM VAZAR)
+  # Coloque seu username e senha abaixo(NÃO DIVULGUE SUA SENHA EM HIPÓTESE ALGUMA, SÓ MODIFIQUE OS CAMPOS ABAIXO SE VOCÊ TIVER CERTEZA QUE ELES NÃO IRÃO VAZAR)
   $mail->Username   = '';                     //SMTP username
   $mail->Password   = '';                               //SMTP password
 
