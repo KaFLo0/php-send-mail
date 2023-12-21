@@ -19,7 +19,7 @@
 
   <div class="container my-auto">
     <header class="py-3 text-center">
-      <img class="img-logo" src="../send-mail/assets/logo.png" alt="Logo">
+      <img src="../send-mail/assets/logo.png" alt="Logo">
       <h2>Send Mail</h2>
       <p class="lead">Seu app de envio de e-mail particular!</p>
     </header>
